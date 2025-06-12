@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const childProcess = require('child_process');
 
@@ -6,7 +7,7 @@ const qrcode = require('qrcode');
 const app = express();
 const puppeteer = require('puppeteer');
 //const browsers = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const browsers =  '/usr/bin/chromium';
+const browsers =  process.env.BROWSERPATH;
 const client = new Client({
     authStrategy: new LocalAuth(),
     clientId: 'client-id',
