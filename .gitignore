@@ -3,4 +3,5 @@ node_modules/*
 .wwebjs_cache/*
 .env 
 composer.lock
-package-lock.json 
+package-lock.json
+user-data/*
