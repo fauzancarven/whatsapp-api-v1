@@ -171,13 +171,20 @@ app.get('/qr-code', (req, res) => {
     res.send(qrCode);
 });
 app.get('/deploy', (req, res) => {
-    childProcess.exec('git pull', (error, stdout, stderr) => {
+    const event = req.header('X-GitHub-Event');
+    if (event === 'push') {
+      childProcess.exec('git pull', (error, stdout, stderr) => {
         if (error) {
-            res.status(500).send(`Error: ${error}`);
-            return;
+          res.status(500).send(`Error: ${error}`);
+          return;
         }
         res.send(stdout);
-    });
+      });
+    } else if (event === 'ping') {
+      res.send('Pong!');
+    } else {
+      res.status(400).send(`Unknown event: ${event}`);
+    }
 });
 app.listen(4000, () => {
 console.log('Server started on port 3000'); 
