@@ -170,7 +170,7 @@ app.get('/', (req, res) => {
 app.get('/qr-code', (req, res) => {
     res.send(qrCode);
 });
-app.get('/deploy', (req, res) => {
+app.post('/deploy', (req, res) => {
     const event = req.header('X-GitHub-Event');
     if (event === 'push') {
       childProcess.exec('git pull', (error, stdout, stderr) => {
