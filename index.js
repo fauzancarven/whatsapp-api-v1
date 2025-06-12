@@ -3,7 +3,7 @@ const express = require('express');
 const childProcess = require('child_process');
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode');  
+const qrcode = require('qrcode');
 const app = express();
 const puppeteer = require('puppeteer');
 //const browsers = 'C:/Program Files/Google/Chrome/Application/chrome.exe'; 
@@ -25,16 +25,18 @@ let qrCode = '';
 
 // QR saat pertama kali login
 //client.on('qr', qr => qrcode.generate(qr, { small: true })); ~~
-client.on('qr', (qr) => {
-    qrcode.toDataURL(qr, (err, url) => {
-        console.log(`QR RECEIVED`, qr); 
-        qrCode = url; 
+client.on('qr', (qr) =>
+{
+    qrcode.toDataURL(qr, (err, url) =>
+    {
+        console.log(`QR RECEIVED`, qr);
+        qrCode = url;
     });
-    
+
     //qrcode.generate(qr, { small: true });
     console.log('QR Code generated, please scan it to authenticate');
-}); 
-  
+});
+
 client.on('ready', () =>
 {
     qrCode = '';
@@ -55,7 +57,7 @@ client.on('message', async msg =>
         }
 
         await chat.sendStateTyping();
-        await chat.sendMessage(`🔍 Sedang mencari data BPJS untuk NIK: *${nik}*...`);
+        //await chat.sendMessage(`🔍 Sedang mencari data BPJS untuk NIK: *${nik}*...`);
 
         try
         {
@@ -117,7 +119,8 @@ async function ambilDataBPJS(nik)
         await page.waitForSelector('input[name="MPasien[no_asuransi]"]');
         await page.type('input[name="MPasien[no_asuransi]"]', nik);
         await page.click('#button_bridgingbpjs');
-        await page.waitForTimeout(3000);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+
 
         const rawData = await page.$eval('#data_peserta_bpjs', el => el.innerText);
         const nomorHP = await page.$eval('input[name="MPasien[no_hp]"]', el => el.value || '-');
@@ -144,7 +147,8 @@ async function ambilDataBPJS(nik)
 }
 
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) =>
+{
     res.send(`
       <html>
         <head>
@@ -168,12 +172,16 @@ app.get('/', (req, res) => {
       </html>
     `);
 });
-app.get('/qr-code', (req, res) => {
+app.get('/qr-code', (req, res) =>
+{
     res.send(qrCode);
 });
-app.post('/deploy', (req, res) => {  
-    childProcess.exec('git pull', (error, stdout, stderr) => {
-        if (error) {
+app.post('/deploy', (req, res) =>
+{
+    childProcess.exec('git pull', (error, stdout, stderr) =>
+    {
+        if (error)
+        {
             res.status(500).send(`Error: ${error}`);
             return;
         }
@@ -181,9 +189,10 @@ app.post('/deploy', (req, res) => {
     });
 
 });
-app.listen(4000, () => {
-console.log('Server started on port 3000'); 
+app.listen(4000, () =>
+{
+    console.log('Server started on port 4000');
 });
-  
-  
+
+
 client.initialize();
