@@ -1,11 +1,13 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const puppeteer = require('puppeteer');
-
+//const browsers = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const browsers =  '/usr/bin/chromium';
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+        //executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+        executablePath: browsers,
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     }
@@ -62,7 +64,7 @@ async function ambilDataBPJS(nik)
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--ignore-certificate-errors'],
-        executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+        executablePath: browsers,
         userDataDir: './user-data',
     });
 
