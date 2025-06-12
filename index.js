@@ -1,4 +1,6 @@
 const express = require('express');
+const childProcess = require('child_process');
+
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');  
 const app = express();
