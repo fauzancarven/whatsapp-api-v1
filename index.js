@@ -164,7 +164,7 @@ app.get('/', (req, res) => {
   app.get('/qr-code', (req, res) => {
     res.send(qrCode);
   });
-  app.listen(3000, () => {
+  app.listen(4000, () => {
     console.log('Server started on port 3000'); 
   });
   
