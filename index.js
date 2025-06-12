@@ -1,10 +1,13 @@
+const express = require('express');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const app = express();
 const puppeteer = require('puppeteer');
 //const browsers = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browsers =  '/usr/bin/chromium';
 const client = new Client({
     authStrategy: new LocalAuth(),
+    clientId: 'client-id',
     puppeteer: {
         //executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
         executablePath: browsers,
@@ -12,14 +15,23 @@ const client = new Client({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     }
 });
+app.use(express.static('public'));
+let qrCode = '';
+
 
 // QR saat pertama kali login
-client.on('qr', qr => qrcode.generate(qr, { small: true })); ~~
-
-    client.on('ready', () =>
-    {
-        console.log('✅ Bot WhatsApp aktif!');
-    });
+//client.on('qr', qr => qrcode.generate(qr, { small: true })); ~~
+client.on('qr', (qr) => {
+    qrCode = qr;
+    //qrcode.generate(qr, { small: true });
+    console.log('QR Code generated, please scan it to authenticate');
+}); 
+  
+client.on('ready', () =>
+{
+    qrCode = '';
+    console.log('✅ Bot WhatsApp aktif!');
+});
 
 client.on('message', async msg =>
 {
@@ -124,4 +136,37 @@ async function ambilDataBPJS(nik)
     }
 }
 
+
+app.get('/', (req, res) => {
+    res.send(`
+      <html>
+        <head>
+          <title>WhatsApp Web</title>
+          <script>
+            setInterval(() => {
+              fetch('/qr-code')
+                .then(response => response.text())
+                .then(qr => {
+                  if (document.getElementById('qr-code').src !== 'https://api.qrserver.com/v1/create-qr-code/?data=' + qr + '&size=200x200') {
+                    document.getElementById('qr-code').src = 'https://api.qrserver.com/v1/create-qr-code/?data=' + qr + '&size=200x200';
+                  }
+                });
+            }, 1000);
+          </script>
+        </head>
+        <body>
+          <h1>WhatsApp Web</h1>
+          <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?data=${qrCode}&size=200x200" />
+        </body>
+      </html>
+    `);
+  });
+  app.get('/qr-code', (req, res) => {
+    res.send(qrCode);
+  });
+  app.listen(3000, () => {
+    console.log('Server started on port 3000'); 
+  });
+  
+  
 client.initialize();
