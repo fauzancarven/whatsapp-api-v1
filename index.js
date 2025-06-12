@@ -19,6 +19,7 @@ app.use(express.static('public'));
 let qrCode = '';
 
 
+
 // QR saat pertama kali login
 //client.on('qr', qr => qrcode.generate(qr, { small: true })); ~~
 client.on('qr', (qr) => {
@@ -83,7 +84,6 @@ async function ambilDataBPJS(nik)
         executablePath: browsers,
         userDataDir: './user-data',
     });
-
     const page = await browser.newPage();
 
     try
@@ -119,13 +119,13 @@ async function ambilDataBPJS(nik)
         const rawData = await page.$eval('#data_peserta_bpjs', el => el.innerText);
         const nomorHP = await page.$eval('input[name="MPasien[no_hp]"]', el => el.value || '-');
 
+        await browser.close();
         const extract = (label) =>
         {
             const regex = new RegExp(label + '\\s*:\\s*(.+)', 'i');
             const match = rawData.match(regex);
             return match ? match[1].split('\n')[0].trim() : '-';
         };
-
         return {
             nama: extract('Nama Peserta'),
             status: extract('Status'),
