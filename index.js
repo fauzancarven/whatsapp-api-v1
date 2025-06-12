@@ -20,6 +20,7 @@ const client = new Client({
 app.use(express.static('public'));
 let qrCode = '';
 
+//TEST update
 
 
 // QR saat pertama kali login
