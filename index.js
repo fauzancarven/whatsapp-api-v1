@@ -1,6 +1,6 @@
 const express = require('express');
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
+const qrcode = require('qrcode');  
 const app = express();
 const puppeteer = require('puppeteer');
 //const browsers = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -22,7 +22,11 @@ let qrCode = '';
 // QR saat pertama kali login
 //client.on('qr', qr => qrcode.generate(qr, { small: true })); ~~
 client.on('qr', (qr) => {
-    qrCode = qr;
+    qrcode.toDataURL(qr, (err, url) => {
+        console.log(`QR RECEIVED`, qr); 
+        qrCode = url; 
+    });
+    
     //qrcode.generate(qr, { small: true });
     console.log('QR Code generated, please scan it to authenticate');
 }); 
@@ -147,8 +151,8 @@ app.get('/', (req, res) => {
               fetch('/qr-code')
                 .then(response => response.text())
                 .then(qr => {
-                  if (document.getElementById('qr-code').src !== 'https://api.qrserver.com/v1/create-qr-code/?data=' + qr + '&size=200x200') {
-                    document.getElementById('qr-code').src = 'https://api.qrserver.com/v1/create-qr-code/?data=' + qr + '&size=200x200';
+                  if (document.getElementById('qr-code').src !== qr) {
+                    document.getElementById('qr-code').src = qr;
                   }
                 });
             }, 1000);
@@ -156,7 +160,7 @@ app.get('/', (req, res) => {
         </head>
         <body>
           <h1>WhatsApp Web</h1>
-          <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?data=${qrCode}&size=200x200" />
+          <img id="qr-code" src="${qrCode}" />
         </body>
       </html>
     `);
