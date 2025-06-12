@@ -21,6 +21,69 @@ app.use(express.static('public'));
 let qrCode = '';
 
 //TEST update
+// Fungsi untuk mengambil data dari ePuskesmas
+async function ambilDataBPJS(nik)
+{
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--ignore-certificate-errors'],
+        executablePath: process.env.CHROME_PATH,
+        userDataDir: './user-data',
+    });
+    const page = await browser.newPage();
+
+    try
+    {
+        await page.goto('https://tasik.epuskesmas.id/login#', { waitUntil: 'networkidle2' });
+
+        if ((await page.title()).includes("Masuk"))
+        {
+            await page.waitForSelector('#email');
+            await page.type('#email', 'rekamdatainformasi@gmail.com');
+            await page.type('#password', 'RMIKcpt123%');
+            await page.click('#login');
+            await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        }
+
+        // Skip jika redirect ke selectPuskesmas
+        if (page.url().includes('selectpuskesmas'))
+        {
+            await page.goBack();
+            await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        }
+
+        await page.goto('https://tasik.epuskesmas.id/pasien/create', { waitUntil: 'networkidle0' });
+
+        await page.select('select[name="MPasien[asuransi_id]"]', '0001'); // Pilih BPJS 
+        await new Promise(resolve => setTimeout(resolve, 5000)); // 
+        await page.waitForSelector('input[name="MPasien[no_asuransi]"]');
+        await page.type('input[name="MPasien[no_asuransi]"]', nik);
+        await page.click('#button_bridgingbpjs');
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 
+
+        const rawData = await page.$eval('#data_peserta_bpjs', el => el.innerText);
+        const nomorHP = await page.$eval('input[name="MPasien[no_hp]"]', el => el.value || '-');
+
+        const extract = (label) =>
+        {
+            const regex = new RegExp(label + '\\s*:\\s*(.+)', 'i');
+            const match = rawData.match(regex);
+            return match ? match[1].split('\n')[0].trim() : '-';
+        };
+        return {
+            nama: extract('Nama Peserta'),
+            status: extract('Status'),
+            faskes: extract('Nama Provider'),
+            kelas: extract('Kelas'),
+            jenisPeserta: extract('Jenis Peserta'),
+            hp: nomorHP
+        };
+
+    } finally
+    {
+        await browser.close();
+    }
+}
 
 
 // QR saat pertama kali login
@@ -119,8 +182,7 @@ async function ambilDataBPJS(nik)
         await page.waitForSelector('input[name="MPasien[no_asuransi]"]');
         await page.type('input[name="MPasien[no_asuransi]"]', nik);
         await page.click('#button_bridgingbpjs');
-        await new Promise(resolve => setTimeout(resolve, 10000));
-
+        await page.waitForTimeout(3000);
 
         const rawData = await page.$eval('#data_peserta_bpjs', el => el.innerText);
         const nomorHP = await page.$eval('input[name="MPasien[no_hp]"]', el => el.value || '-');

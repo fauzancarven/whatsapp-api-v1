@@ -1,7 +1,6 @@
 {
     "ignore": [
         "node_modules",
-        ".wwebjs_auth",
-        "user-data"
+        ".wwebjs_auth"
     ]
 }
