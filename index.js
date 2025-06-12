@@ -25,7 +25,7 @@ let qrCode = '';
 async function ambilDataBPJS(nik)
 {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         args: ['--ignore-certificate-errors'],
         executablePath: process.env.CHROME_PATH,
         userDataDir: './user-data',
