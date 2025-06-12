@@ -1,3 +1,3 @@
 {
-    "ignore": ["node_modules", ".wwebjs_auth"]
+    "ignore": ["node_modules", ".wwebjs_auth", "user-data"]
 }
