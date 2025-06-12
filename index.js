@@ -12,12 +12,12 @@ const client = new Client({
 });
 
 // QR saat pertama kali login
-client.on('qr', qr => qrcode.generate(qr, { small: true }));
+client.on('qr', qr => qrcode.generate(qr, { small: true })); ~~
 
-client.on('ready', () =>
-{
-    console.log('✅ Bot WhatsApp aktif!');
-});
+    client.on('ready', () =>
+    {
+        console.log('✅ Bot WhatsApp aktif!');
+    });
 
 client.on('message', async msg =>
 {
@@ -29,23 +29,23 @@ client.on('message', async msg =>
         const nik = text.split(' ')[1];
         if (!/^\d{16}$/.test(nik))
         {
-            return chat.sendMessage('❌ Format salah. Contoh: Bpjs 3206012010020007 (16 digit).');
+            return chat.sendMessage('❌ Format salah. Contoh: *Bpjs 3206012010020007* (16 digit).');
         }
 
         await chat.sendStateTyping();
-        await chat.sendMessage(🔍 Sedang mencari data BPJS untuk NIK: *${nik}*...);
+        await chat.sendMessage(`🔍 Sedang mencari data BPJS untuk NIK: *${nik}*...`);
 
         try
         {
             const data = await ambilDataBPJS(nik);
             await chat.sendMessage(
-                *Data Peserta BPJS:*\n +
-                *Nama:* ${data.nama}\n +
-                *No HP:* ${data.hp}\n +
-                *Status:* ${data.status}\n +
-                *Faskes:* ${data.faskes}\n +
-                *Kelas:* ${data.kelas}\n +
-                *Jenis Peserta:* ${data.jenisPeserta}
+                `*Data Peserta BPJS:*\n` +
+                `*Nama:* ${data.nama}\n` +
+                `*No HP:* ${data.hp}\n` +
+                `*Status:* ${data.status}\n` +
+                `*Faskes:* ${data.faskes}\n` +
+                `*Kelas:* ${data.kelas}\n` +
+                `*Jenis Peserta:* ${data.jenisPeserta}`
             );
 
         } catch (err)
