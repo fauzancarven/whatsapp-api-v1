@@ -164,13 +164,22 @@ app.get('/', (req, res) => {
         </body>
       </html>
     `);
-  });
-  app.get('/qr-code', (req, res) => {
+});
+app.get('/qr-code', (req, res) => {
     res.send(qrCode);
-  });
-  app.listen(4000, () => {
-    console.log('Server started on port 3000'); 
-  });
+});
+app.get('/deploy', (req, res) => {
+    childProcess.exec('git pull', (error, stdout, stderr) => {
+        if (error) {
+            res.status(500).send(`Error: ${error}`);
+            return;
+        }
+        res.send(stdout);
+    });
+});
+app.listen(4000, () => {
+console.log('Server started on port 3000'); 
+});
   
   
 client.initialize();
